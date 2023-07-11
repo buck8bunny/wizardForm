@@ -314,7 +314,6 @@ img {
     width: auto;
     transform: translateX(0); } }
 
-/* ---------------- */
   .txtarea {
     height: 90px;
     border-bottom: 1px solid #333;
@@ -335,20 +334,12 @@ img {
     margin: auto;
     height: 90px;
     width: 90px;
-   
     padding: 26px;
     border-radius: 50px;
     font-size: 24px;
-    /* width: 33%; */
-    text-align: center; 
-    /* display: block; */
- 
-    
-
+    text-align: center;
   }
   
-  
-
   .fa:hover {
       opacity: 0.7;
   }
@@ -364,9 +355,12 @@ img {
     color: white;
   }
 
-
   .error-message {
     color: red;
     font-size: 12px;
   }
-  
+  .title{
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+  }

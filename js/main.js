@@ -56,7 +56,7 @@ $(function(){
                     document.getElementById("phone-error").innerHTML = "Phone is required";
                     return false; 
                 } 
-                else if (!/^\+1.?\(?[0-9]{3}\)?.?[0-9]{3}.?[0-9]{4}$/.test(phone)) {
+                else if (!/^.?1.?\(?[0-9]{3}\)?.?[0-9]{3}.?[0-9]{4}$/.test(phone)) {
                     document.getElementById("phone-error").style.display = "block";
                     document.getElementById("phone-error").innerHTML = "Invalid phone number";
                     return false;
@@ -83,13 +83,43 @@ $(function(){
                 }
               } 
     
+            if (currentIndex === 1) {
+                var file = $('.form-holder input[name="file"]').val();
+                var formData = new FormData($(this)[0]);
+      
+                $.ajax({
+                    url: 'image.php',
+                    type: 'POST',
+                    data: formData,
+                    async: false,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                    if (response === 'valid') {
+                        // File format is valid, submit the form
+                        $('#uploadForm')[0].submit();
+                    }
+                    }
+                });
+	        };
+            
+            
+
             if ( newIndex === 1 ) {
                 $('.steps').addClass('step-2');
+
             } else {
                 $('.steps').removeClass('step-2');
             }
+
+            
+
             if ( newIndex === 2 ) {
+                
                 $('.steps').addClass('step-3');
+
+
             } else {
                 $('.steps').removeClass('step-3');
             }
