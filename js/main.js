@@ -1,17 +1,43 @@
+// Populate form with saved data on page load
+window.onload = function()  {
+    // Function to populate form fields with saved data
+    function populateFormFields() {
+        $('.form-holder input[name="firstName"]').val(localStorage.getItem('firstName'));
+        $('.form-holder input[name="lastName"]').val(localStorage.getItem('lastName'));
+        $('.form-holder input[name="birthday"]').val(localStorage.getItem('birthday'));
+        $('.form-holder input[name="report"]').val(localStorage.getItem('report'));
+        $('.select-control').val(localStorage.getItem('country'));
+        $('.form-holder input[name="phone"]').val(localStorage.getItem('phone'));
+        $('.form-holder input[name="email"]').val(localStorage.getItem('email'));
+    }
+  
+    if (localStorage.getItem('country')) {
+        populateFormFields();
+    }
+  
+};
+
+
 $(function(){
 	$("#wizard").steps({
         headerTag: "h4",
         bodyTag: "section",
         transitionEffect: "fade",
         enableAllSteps: true,
+        stateSave: true,
         transitionEffectSpeed: 300,
         labels: {
             next: "Next",
             previous: "Back"
         },
+        
         onStepChanging: function (event, currentIndex, newIndex) {
+            localStorage.setItem('currentPageIndex', newIndex);
+    
             if (currentIndex === 0) {
                 // Validation for the first step
+                var isValid = true;
+
                 var firstName = $('.form-holder input[name="firstName"]').val();
                 var lastName = $('.form-holder input[name="lastName"]').val();
                 var birthday = $('.form-holder input[name="birthday"]').val();
@@ -19,72 +45,110 @@ $(function(){
                 var country = $('.select-control').val();
                 var phone = $('.form-holder input[name="phone"]').val();
                 var email = $('.form-holder input[name="email"]').val();
+                var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
  
-                if (firstName === '') {
-                    document.getElementById("fname-error").style.display = "block";
-                    return false; // Prevent moving to the next step
+                if (firstName === "") {
+                    $("#fname-error").show();
+                    isValid = false;
                 } else {
-                    document.getElementById("fname-error").style.display = "none";
+                    $("#fname-error").hide();
                 }
-                if (lastName === '') {
-                    document.getElementById("lname-error").style.display = "block";
-                    return false; 
+              
+                if (lastName === "") {
+                    $("#lname-error").show();
+                    isValid = false;
                 } else {
-                    document.getElementById("lname-error").style.display = "none";
+                    $("#lname-error").hide();
                 }
-                if (birthday === '') {
-                    document.getElementById("birthday-error").style.display = "block";
-                    return false; 
+              
+                if (birthday === "") {
+                    $("#birthday-error").show();
+                    isValid = false;
                 } else {
-                    document.getElementById("birthday-error").style.display = "none";
+                    $("#birthday-error").hide();
                 }
-                if (report === '') {
-                    document.getElementById("report-error").style.display = "block";
-                    return false; 
+              
+                if (report === "") {
+                    $("#report-error").show();
+                    isValid = false;
                 } else {
-                    document.getElementById("report-error").style.display = "none";
+                    $("#report-error").hide();
                 }
-                if (country === '' || country === "Country"){
-                    document.getElementById("country-error").style.display = "block";
-                    return false; 
+              
+                if (country === "Country") {
+                    $("#country-error").show();
+                    isValid = false;
                 } else {
-                    document.getElementById("country-error").style.display = "none";
+                    $("#country-error").hide();
                 }
-
-                if (phone === '') {
-                    document.getElementById("phone-error").style.display = "block";
-                    document.getElementById("phone-error").innerHTML = "Phone is required";
-                    return false; 
-                } 
-                else if (!/^.?1.?\(?[0-9]{3}\)?.?[0-9]{3}.?[0-9]{4}$/.test(phone)) {
-                    document.getElementById("phone-error").style.display = "block";
-                    document.getElementById("phone-error").innerHTML = "Invalid phone number";
-                    return false;
-                  }
-                
+              
+                if (phone === "") {
+                    $("#phone-error").show();
+                    isValid = false;
+                }
+                else if (!/^.?1.?\(?[0-9]{3}\)?.?[0-9]{3}.?[0-9]{4}$/.test(phone)) {  
+                    document.getElementById("phone-error").style.display = "block"; 
+                    isValid = false;
+                    document.getElementById("phone-error").innerHTML = "Invalid phone number";   
+                }
                 else {
-                    document.getElementById("phone-error").style.display = "none";
+                    $("#phone-error").hide();
                 }
-
-                if (email === '') {
-                    document.getElementById("email-error").style.display = "block";
-                    document.getElementById("email-error").innerHTML = "Email is required";
-                    return false; 
+              
+                if (email === "") {
+                    $("#email-error").show();
+                    isValid = false;
                 } 
-                
-                else if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(phone)) {
+                  
+                else if (reg.test(email) == false) {
                     document.getElementById("email-error").style.display = "block";
                     document.getElementById("email-error").innerHTML = "Invalid email";
-                    return false;
-                  }
-                
-                else {
-                    document.getElementById("email-error").style.display = "none";
+                    isValid = false;
                 }
+                else {
+                    
+                    // Perform AJAX request to check if email exists in the database
+                    $.ajax({
+                        url: "check_email.php",
+                        type: "POST",
+                        data: { email: email },
+                        async : false,
+                        success: function (response) {
+                        if (response === 'exists') {
+                            // Display error message if email already exists
+                            $("#email-error").show();
+                            $("#email-error").html("Email already exists in the database");
+                            isValid = false;
+                        } else {
+                            // Perform form submission or other actions if email doesn't exist
+                            $("#email-error").hide();
+                            }
+                        },
+                    });
+                }
+                return isValid;
               } 
+
     
+            
+            
+            if ( newIndex === 1 ) {
+                $('.steps').addClass('step-2');
+
+            } else {
+                $('.steps').removeClass('step-2');
+            }
+
             if (currentIndex === 1) {
-                var file = $('.form-holder input[name="file"]').val();
+                // Save form data to local storage
+                localStorage.setItem('firstName', $('.form-holder input[name="firstName"]').val());
+                localStorage.setItem('lastName', $('.form-holder input[name="lastName"]').val());
+                localStorage.setItem('birthday', $('.form-holder input[name="birthday"]').val());
+                localStorage.setItem('report', $('.form-holder input[name="report"]').val());
+                localStorage.setItem('country', $('.select-control').val());
+                localStorage.setItem('phone', $('.form-holder input[name="phone"]').val());
+                localStorage.setItem('email', $('.form-holder input[name="email"]').val());
+
                 var formData = new FormData($(this)[0]);
       
                 $.ajax({
@@ -103,18 +167,6 @@ $(function(){
                     }
                 });
 	        };
-            
-            
-
-            if ( newIndex === 1 ) {
-                $('.steps').addClass('step-2');
-
-            } else {
-                $('.steps').removeClass('step-2');
-            }
-
-            
-
             if ( newIndex === 2 ) {
                 
                 $('.steps').addClass('step-3');
@@ -123,11 +175,35 @@ $(function(){
             } else {
                 $('.steps').removeClass('step-3');
             }
+
+
             return true; 
+        },
+  
+        onFinished: function(event, currentIndex) {
+            event.preventDefault();
+ 
+            // Perform AJAX form submission
+            var form = $(this);
+            // Check if the form has already been submitted
+            if (form.data('submitted')) {
+                alert('Form already submitted!');
+                return;
+            }
+            
+            // Set the form submission status to true
+            form.data('submitted', true);
+
+            $(this).ajaxSubmit({
+                url: "input.php",
+                data: form,
+                success: function(data) {
+                    alert(data);
+                }
+            });
         }
     });
-   
-
+    
     // Custom Jquery Steps
     $('.forward').click(function(){
     	$("#wizard").steps('next');
@@ -136,6 +212,7 @@ $(function(){
     $('.backward').click(function(){
         $("#wizard").steps('previous');
     })
+
     // Select
     $('html').click(function() {
         $('.select .dropdown').hide(); 

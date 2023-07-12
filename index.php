@@ -2,9 +2,9 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>FormWizard_Khlipitko</title>
+		<title>Form Wizard</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="author" content="colorlib.com">
+		<meta name="Artem Khlipitko">
 
 		<!-- MATERIAL DESIGN ICONIC FONT -->
 		<link rel="stylesheet" href="fonts/material-design-iconic-font/css/material-design-iconic-font.css">
@@ -94,8 +94,6 @@
                     		</div>
                     	</div>
 
-
-
                         <!-- Email -->
                         <div class="form-row">
                     		<div class="form-holder">
@@ -110,33 +108,29 @@
                 
 				<!-- SECTION 2 -->
                 <h4></h4>
-                <section>
+                <section class="section-2">
                 	<div class="inner">
                         <!-- Company -->
                         <div class="form-row">
                     		<div class="form-holder">
-                    			<input type="text" class="form-control" placeholder="Company">
+                    			<input type="text" class="form-control" name = "сompany" placeholder="Company">
                     		</div>
                     	</div>
                                       
                         <!-- Position -->
                         <div class="form-row">
                             <div class="form-holder">
-                                <input type="text" class="form-control" placeholder="Position">
+                                <input type="text" class="form-control" name = "position" placeholder="Position">
                             </div>
                         </div>
 
                         <!-- About me -->
                         <div class="form-row">
                             <div class="form-holder">
-                                <textarea class="txtarea" placeholder="About me" rows="4" cols="50"></textarea>
+                                <textarea class="txtarea" placeholder="About me" name = "about" rows="4" cols="50" maxlength="170"></textarea>
                             </div>
                         </div>
                      
-                        <!-- <a class="avatar">
-                    		<img src="images/avatar2.png" id="targetLayer" alt="" height="128" width="128">
-                    	</a> -->
-
                         <!-- Avatar -->
                         <div class="form-row">
                     		<div class="form-holder">
@@ -159,25 +153,27 @@
                             <a href="https://twitter.com/share?url=http://127.0.0.1:5500/index.html&text=Check out this Meetup with SoCal AngularJS!" target="_blank" rel="noopener noreferrer" class="fa fa-twitter fa-3x"></a>
                         
                         </div>
-                    
-                        <!-- Counter  -->
-                        <div class="form-row">
-                            <div class="form-holder">
-                                <text class="text" placeholder="All members (178)" rows="4" cols="50"></text>
-                            </div>
-                            
-                        </div>
-                        <div class="form-holder">
-                            <input type="text" class="form-control" placeholder="All members (178)">
-                        </div>
+                        <!-- User counter  -->
+                        <?php
+                            $conn = mysqli_connect("localhost", "root", "root", "test");;
+
+                            if (!$conn) {
+                                die("Ошибка подключения: " . mysqli_connect_error());
+                            }
+
+                            $query = "SELECT COUNT(*) as total FROM users";
+                            $result = mysqli_query($conn, $query);
+                            $row = mysqli_fetch_assoc($result);
+                            $totalRows = $row['total'];
+                            ?>
+                        <a href="members.php" class="fa-3x" style="color:green;margin:0 auto;width:100%;text-shadow: 2px 2px #1c87c9" > All members (<?php echo $totalRows; ?>)</a>
                     </div>
                 </section>
-                <input type="submit" name="submit" value="Save">
             </form>
 		</div>
 
 		<script src="js/jquery-3.3.1.min.js"></script>
-		
+		<script src="https://malsup.github.io/jquery.form.js"></script> 
 		<!-- JQUERY STEP -->
 		<script src="js/jquery.steps.js"></script>
 
@@ -187,6 +183,5 @@
 
 		<script src="js/main.js"></script>
 
-<!-- Template created and distributed by Colorlib -->
 </body>
 </html>

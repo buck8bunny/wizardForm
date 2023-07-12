@@ -16,7 +16,10 @@ if (isset($_POST["firstName"]) && isset($_POST["lastName"]) && isset($_POST["bir
         phone VARCHAR(20),
         email VARCHAR(30),
         file_name VARCHAR(100),
-        uploaded_on DATETIME
+        uploaded_on DATETIME,
+        сompany VARCHAR(50),
+        position VARCHAR(50),
+        about VARCHAR(170)
         );";
 
     $conn->query($sql);
@@ -35,7 +38,9 @@ if (isset($_POST["firstName"]) && isset($_POST["lastName"]) && isset($_POST["bir
     $phone = $conn->real_escape_string($_POST["phone"]);
     $phone = "+" . preg_replace('/[^0-9]/', '', $phone);
     $email = $conn->real_escape_string($_POST["email"]); 
-
+    $сompany = $conn->real_escape_string($_POST["сompany"]); 
+    $position = $conn->real_escape_string($_POST["position"]); 
+    $about = $conn->real_escape_string($_POST["about"]); 
     $statusMsg = '';
 
     // File upload path
@@ -44,38 +49,38 @@ if (isset($_POST["firstName"]) && isset($_POST["lastName"]) && isset($_POST["bir
     $targetFilePath = $targetDir . $fileName;
     $fileType = pathinfo($targetFilePath,PATHINFO_EXTENSION);
 
-    if(isset($_POST["submit"])){
-        // Check if a file is uploaded
-        if(!empty($_FILES["file"]["name"])){
-            // Allow certain file formats
-            $allowTypes = array('jpg','png','jpeg','gif');
-            if(in_array($fileType, $allowTypes)){
-                // Upload file to server
-                if(move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)){
-                    // File uploaded successfully
-                    $statusMsg = "The file ".$fileName. " has been uploaded successfully.";
-                }else{
-                    $statusMsg = "Sorry, there was an error uploading your file.";
-                }
+
+    // Check if a file is uploaded
+    if(!empty($_FILES["file"]["name"])){
+        // Allow certain file formats
+        $allowTypes = array('jpg','png','jpeg','gif');
+        if(in_array($fileType, $allowTypes)){
+            // Upload file to server
+            if(move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)){
+                // File uploaded successfully
+                $statusMsg = "The file ".$fileName. " has been uploaded successfully.";
             }else{
-                $statusMsg = 'Sorry, only JPG, JPEG, PNG, GIF files are allowed to upload.';
+                $statusMsg = "Sorry, there was an error uploading your file.";
             }
         }else{
-            // No file uploaded, use default photo
-            $fileName = "avatar2.png";
-            $statusMsg = "No file uploaded. Using default photo.";
+            $statusMsg = 'Sorry, only JPG, JPEG, PNG, GIF files are allowed to upload.';
         }
-
-        // Insert data into database
-        $sql = "INSERT INTO users (fullname, report, date_of_birth, country, phone, email, file_name, uploaded_on) VALUES 
-            ('$fullname', '$report', '$dateFormatted', '$country', '$phone', '$email', '$fileName', NOW())";
-
-        if($conn->query($sql)){
-            echo "Data successfully added. ".$statusMsg;
-        }else{
-            echo "Error: " . $conn->error;
-        }
+    }else{
+        // No file uploaded, use default photo
+        $fileName = "avatar2.png";
+        $statusMsg = "No file uploaded. Using default photo.";
     }
+
+    // Insert data into database
+    $sql = "INSERT INTO users (fullname, report, date_of_birth, country, phone, email, сompany, position, about, file_name, uploaded_on) VALUES 
+        ('$fullname', '$report', '$dateFormatted', '$country', '$phone', '$email', '$сompany', '$position', '$about', '$fileName', NOW())";
+
+    if($conn->query($sql)){
+        echo "Data successfully added. ".$statusMsg;
+    }else{
+        echo "Error: " . $conn->error;
+    }
+
 
     $conn->close();
 }

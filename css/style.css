@@ -331,7 +331,7 @@ img {
     } 
   
   .fa {
-    margin: auto;
+    margin: 0 auto;
     height: 90px;
     width: 90px;
     padding: 26px;
